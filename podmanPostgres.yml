@@ -1,0 +1,29 @@
+services:
+  rundeck_DB:
+    image: postgres:15.17-trixie
+    container_name: Postgres-Podman
+    ports: 
+      - "5432:5432"
+    volumes:
+      - truenas-postgres-volume:/var/lib/postgresql/data
+    environment:
+# credenciais que DB usa para checkar user do rundeck e se este username + pass estiverem corretos -> ligaçao permitida.
+      - POSTGRES_USER=rundeckAPI
+      - POSTGRES_PASSWORD=1234!
+      - POSTGRES_DB=PostaBacalhau
+    networks:
+      - rundeckDB_diffEngines
+
+networks:
+  rundeckDB_diffEngines:
+    external: true
+
+# O Podman vê 2 mundos: /Users (Mac) e /var/home/core (VM)
+# Isto é capacidade NATIVA dele - não é preciso configurar nada
+volumes:
+  truenas-postgres-volume:
+    driver: local
+    driver_opts:
+      # type: none -> frescura
+      device: /var/home/core/mnt/vol1_iscsi-RUNDECK/DB-PostGres
+      # o: bind -> frescura

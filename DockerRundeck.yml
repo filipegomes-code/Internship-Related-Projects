@@ -1,0 +1,24 @@
+# PLAINTEXT -> docker inspect , logs
+
+services:
+  rundeck: # nome do "mini-serviço"
+    build: ../DockerFiles/RunDeck/
+    container_name: RUNDECK-Podman # nome do container
+    # depends_on: ja n preciso disto pq agr DB e Rundeck estão em files separados
+    #  - rundeck_DB
+    ports: # ports a conectar do host_port:App
+      - "7890:4440"
+    # user: "501:1000" isto n é preciso, n mexe diretamente com a VM do podman, pensei que fosse 1 dos problemas de n dar c/ podman
+    environment:
+      - RUNDECK_DATABASE_USERNAME=rundeckAPI
+      - RUNDECK_DATABASE_PASSWORD=1234!
+      - RUNDECK_DATABASE_DRIVER=org.postgresql.Driver
+      - RUNDECK_DATABASE_URL=jdbc:postgresql://host.docker.internal:5432/PostaBacalhau
+      - RUNDECK_GRAILS_URL=http://127.0.0.1:7890 # cena que me tramou - notas
+      - RUNDECK_SERVER_DISABLE_JOURNAL=true
+    networks:
+      - rundeckDB_diffEngines
+
+networks:
+  rundeckDB_diffEngines:
+    external: true
